@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bistro Model - Store Intelligence Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><path d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/></g></g></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        .hero-content {
+            text-align: center;
+            color: white;
+            z-index: 1;
+            padding: 2rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: white;
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Sections */
+        section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        /* Pipeline Cards */
+        .pipeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pipeline-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pipeline-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient);
+        }
+
+        .pipeline-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .pipeline-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary);
+            opacity: 0.2;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .pipeline-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .pipeline-card ul {
+            list-style: none;
+        }
+
+        .pipeline-card li {
+            padding: 0.5rem 0;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .pipeline-card li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        /* Store Types Table */
+        .table-container {
+            overflow-x: auto;
+            margin: 2rem 0;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: var(--gradient);
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .price-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .price-very-low { background: #fee2e2; color: #dc2626; }
+        .price-low { background: #fef3c7; color: #d97706; }
+        .price-medium { background: #dbeafe; color: #2563eb; }
+        .price-high { background: #d1fae5; color: #059669; }
+        .price-very-high { background: #e9d5ff; color: #7c3aed; }
+
+        /* Product Matrix */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .product-category {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .product-category:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-header {
+            padding: 1.5rem;
+            background: var(--gradient);
+            color: white;
+        }
+
+        .category-header h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-content {
+            padding: 1.5rem;
+        }
+
+        .product-item {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: #f8fafc;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fit-indicator {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .fit-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e5e7eb;
+        }
+
+        .fit-dot.active {
+            background: var(--secondary);
+        }
+
+        /* Implementation Section */
+        .implementation-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .impl-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e5e7eb 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .impl-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .impl-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { font-size: 1.2rem; }
+            .nav-links { display: none; }
+            .section-title { font-size: 2rem; }
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">Bistro Model</div>
+            <ul class="nav-links">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#stores">Store Types</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#implementation">Implementation</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Bistro Model</h1>
+            <p>Store Intelligence & Product Placement Strategy</p>
+            <a href="#overview" class="cta-button">Explore Strategy</a>
+        </div>
+    </section>
+
+    <!-- Pipeline Overview -->
+    <section id="overview" class="fade-in">
+        <h2 class="section-title">How It Works</h2>
+        <div class="pipeline-grid">
+            <div class="pipeline-card">
+                <span class="pipeline-number">1</span>
+                <h3>Data Collection</h3>
+                <ul>
+                    <li>Store profile capture</li>
+                    <li>Current inventory audit</li>
+                    <li>Visual documentation</li>
+                    <li>Neighborhood analysis</li>
+                </ul>
+            </div>
+            <div class="pipeline-card">
+                <span class="pipeline-number">2</span>
+                <h3>Smart Analysis</h3>
+                <ul>
+                    <li>Gap identification</li>
+                    <li>Price point analysis</li>
+                    <li>Predictive modeling</li>
+                    <li>Opportunity scoring</li>
+                </ul>
+            </div>
+            <div class="pipeline-card">
+                <span class="pipeline-number">3</span>
+                <h3>Recommendations</h3>
+                <ul>
+                    <li>Product placement</li>
+                    <li>Custom proposals</li>
+                    <li>ROI projections</li>
+                    <li>Territory planning</li>
+                </ul>
+            </div>
+            <div class="pipeline-card">
+                <span class="pipeline-number">4</span>
+                <h3>Continuous Learning</h3>
+                <ul>
+                    <li>Track performance</li>
+                    <li>Refine templates</li>
+                    <li>Update predictions</li>
+                    <li>Scale success</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Store Types -->
+    <section id="stores" class="fade-in">
+        <h2 class="section-title">Store Categorization</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Store Type</th>
+                        <th>Dwell Time</th>
+                        <th>Price Tolerance</th>
+                        <th>Key Products</th>
+                        <th>Strategy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Highway Gas Station</strong></td>
+                        <td>&lt;2 min</td>
+                        <td><span class="price-tag price-high">High (130%)</span></td>
+                        <td>Energy drinks, grab-and-go</td>
+                        <td>Premium convenience items</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Urban Bodega</strong></td>
+                        <td>&lt;2 min</td>
+                        <td><span class="price-tag price-low">Low (95%)</span></td>
+                        <td>Singles, familiar brands</td>
+                        <td>Value + ethnic options</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gym/Fitness</strong></td>
+                        <td>10-30 min</td>
+                        <td><span class="price-tag price-very-high">Very High (160%)</span></td>
+                        <td>Protein, alkaline water</td>
+                        <td>Premium health products</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Office Micro-Market</strong></td>
+                        <td>2-10 min</td>
+                        <td><span class="price-tag price-high">High (125%)</span></td>
+                        <td>Cold brew, healthy snacks</td>
+                        <td>Better-for-you focus</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Rural Store</strong></td>
+                        <td>5-10 min</td>
+                        <td><span class="price-tag price-very-low">Very Low (85%)</span></td>
+                        <td>Traditional, value brands</td>
+                        <td>Price-first strategy</td>
+                    </tr>
+                    <tr>
+                        <td><strong>College Campus</strong></td>
+                        <td>5-15 min</td>
+                        <td><span class="price-tag price-medium">Medium (110%)</span></td>
+                        <td>Energy, study snacks</td>
+                        <td>Bulk options, variety</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Airport/Transit</strong></td>
+                        <td>&lt;5 min</td>
+                        <td><span class="price-tag price-very-high">Very High (180%)</span></td>
+                        <td>Travel sizes, premium</td>
+                        <td>Convenience premium</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Product Matrix -->
+    <section id="products" class="fade-in">
+        <h2 class="section-title">Product-Store Fit Matrix</h2>
+        <div class="product-grid">
+            <div class="product-category">
+                <div class="category-header">
+                    <h3>Energy & Performance</h3>
+                    <p>High-margin category leaders</p>
+                </div>
+                <div class="category-content">
+                    <div class="product-item">
+                        <span><strong>Celsius, Alani Nu</strong></span>
+                        <div class="fit-indicator">
+                            <div class="fit-dot active" title="Gyms"></div>
+                            <div class="fit-dot active" title="Offices"></div>
+                            <div class="fit-dot" title="Rural"></div>
+                        </div>
+                    </div>
+                    <div class="product-item">
+                        <span><strong>Monster, Red Bull</strong></span>
+                        <div class="fit-indicator">
+                            <div class="fit-dot active" title="Gas"></div>
+                            <div class="fit-dot active" title="QSR"></div>
+                            <div class="fit-dot active" title="Transit"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-category">
+                <div class="category-header">
+                    <h3>Functional Wellness</h3>
+                    <p>Growing premium segment</p>
+                </div>
+                <div class="category-content">
+                    <div class="product-item">
+                        <span><strong>GT's Kombucha</strong></span>
+                        <div class="fit-indicator">
+                            <div class="fit-dot active" title="Offices"></div>
+                            <div class="fit-dot active" title="Urban"></div>
+                            <div class="fit-dot" title="Rural"></div>
+                        </div>
+                    </div>
+                    <div class="product-item">
+                        <span><strong>Essentia Water</strong></span>
+                        <div class="fit-indicator">
+                            <div class="fit-dot active" title="Gyms"></div>
+                            <div class="fit-dot active" title="Airport"></div>
+                            <div class="fit-dot" title="Ethnic"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-category">
+                <div class="category-header">
+                    <h3>Ethnic/Cultural</h3>
+                    <p>Loyalty-driving essentials</p>
+                </div>
+                <div class="category-content">
+                    <div class="product-item">
+                        <span><strong>Pocari Sweat</strong></span>
+                        <div class="fit-indicator">
+                            <div class="fit-dot active" title="Asian"></div>
+                            <div class="fit-dot active" title="Urban"></div>
+                            <div class="fit-dot" title="Rural"></div>
+                        </div>
+                    </div>
+                    <div class="product-item">
+                        <span><strong>Jarritos</strong></span>
+                        <div class="fit-indicator">
+                            <div class="fit-dot active" title="Latino"></div>
+                            <div class="fit-dot active" title="QSR"></div>
+                            <div class="fit-dot" title="Gyms"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-category">
+                <div class="category-header">
+                    <h3>Value/Budget</h3>
+                    <p>Volume drivers</p>
+                </div>
+                <div class="category-content">
+                    <div class="product-item">
+                        <span><strong>Store Brands</strong></span>
+                        <div class="fit-indicator">
+                            <div class="fit-dot active" title="Rural"></div>
+                            <div class="fit-dot active" title="Ethnic"></div>
+                            <div class="fit-dot" title="Airport"></div>
+                        </div>
+                    </div>
+                    <div class="product-item">
+                        <span><strong>Bulk Water</strong></span>
+                        <div class="fit-indicator">
+                            <div class="fit-dot active" title="Rural"></div>
+                            <div class="fit-dot active" title="Grocery"></div>
+                            <div class="fit-dot" title="Gyms"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Implementation -->
+    <section id="implementation" class="fade-in">
+        <h2 class="section-title">Implementation Strategy</h2>
+        <div class="implementation-cards">
+            <div class="impl-card">
+                <div class="impl-icon">📊</div>
+                <h3>Quick Wins</h3>
+                <p>Start with high-velocity locations: gyms needing Celsius, offices lacking cold brew, gas stations without protein bars.</p>
+            </div>
+            <div class="impl-card">
+                <div class="impl-icon">💰</div>
+                <h3>Pricing Rules</h3>
+                <p>Premium ($3.50+) only in gyms/airports. Value (&lt;$2) essential for rural/ethnic stores. Match price to income.</p>
+            </div>
+            <div class="impl-card">
+                <div class="impl-icon">🎯</div>
+                <h3>Success Metrics</h3>
+                <p>Ultra-fast stores need daily restock. 45-60% margins in gyms. 15-25% margins in value locations.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Bistro Model Strategy. Optimizing CPG placement through data-driven intelligence.</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Fade in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
